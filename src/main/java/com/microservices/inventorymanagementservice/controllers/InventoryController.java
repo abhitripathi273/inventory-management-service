@@ -1,0 +1,42 @@
+package com.microservices.inventorymanagementservice.controllers;
+
+import com.microservices.inventorymanagementservice.models.Inventory;
+import com.microservices.inventorymanagementservice.repos.InventoryManagementRepository;
+import com.microservices.inventorymanagementservice.services.InventoryService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+@RestController
+public class InventoryController {
+
+    @Autowired
+    InventoryService service;
+
+    @GetMapping("/inventory")
+    public List<Inventory> getInventory() {
+        return service.getInventoryDetails();
+    }
+
+    @GetMapping("/inventory/purchase/{productType}/quantity/{quantity}")
+    public ResponseEntity<Void> purchaseProduct(@PathVariable String productType,
+                                                @PathVariable int quantity) {
+        return service.purchaseProduct(productType, quantity) ?
+                new ResponseEntity<>(HttpStatus.OK) : new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping("/inventory/restock/{productType}/quantity/{quantity}")
+    public ResponseEntity<Inventory> restockProduct(@PathVariable String productType,
+                                                    @PathVariable int quantity) {
+        Inventory updatedInventory = service.restockProduct(productType, quantity);
+        if (null == updatedInventory.getProductCategory())
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(updatedInventory, HttpStatus.OK);
+    }
+}
