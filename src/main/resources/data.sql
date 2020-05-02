@@ -1,4 +1,6 @@
 insert into inventory(product_category, stock)
-values ('laptop', 10);
+values ('Phones', 3);
 insert into inventory(product_category, stock)
-values ('mobile', 25);
+values ('Tablets', 3);
+insert into inventory(product_category, stock)
+values ('Smartwatches', 3);

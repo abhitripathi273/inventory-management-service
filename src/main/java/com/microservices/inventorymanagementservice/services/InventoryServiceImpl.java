@@ -35,12 +35,38 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Override
+    public boolean purchaseSingleProduct(String productType) {
+        AtomicBoolean success = new AtomicBoolean(false);
+        repository.findById(productType).ifPresent(inventory -> {
+            Inventory updatedInventory = new Inventory();
+            if (inventory.getStock() > 1) {
+                updatedInventory.setProductCategory(productType);
+                updatedInventory.setStock(inventory.getStock() - 1);
+                repository.save(updatedInventory);
+                success.set(true);
+            }
+        });
+        return success.get();
+    }
+
+    @Override
     public Inventory restockProduct(String productType, int quantity) {
         Inventory updatedInventory = new Inventory();
         updatedInventory.setProductCategory(productType);
         updatedInventory.setStock(quantity);
         repository.findById(productType).ifPresent(inventory -> {
             updatedInventory.setStock(inventory.getStock() + quantity);
+        });
+        return repository.save(updatedInventory);
+    }
+
+    @Override
+    public Inventory restockSingleProduct(String productType) {
+        Inventory updatedInventory = new Inventory();
+        updatedInventory.setProductCategory(productType);
+        updatedInventory.setStock(1);
+        repository.findById(productType).ifPresent(inventory -> {
+            updatedInventory.setStock(inventory.getStock() + 1);
         });
         return repository.save(updatedInventory);
     }
