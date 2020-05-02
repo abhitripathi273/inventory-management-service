@@ -1,9 +1,11 @@
 # inventory-management-service
 
 ## Endpoints
-1.  GET /inventory
-2.  GET /inventory/purchase/{productType}/quantity/{quantity}
-3.  GET /inventory/restock/{productType}/quantity/{quantity}
+1.  GET /inventory : Returns the inventory details.
+2.  GET /inventory/purchase/{productType}/quantity/{quantity} : Updates the inventory as per specified product type and quantity.
+3.  GET /inventory/purchase/{productType} : Reduces the stock count by one for the specified product.
+4.  GET /inventory/restock/{productType}/quantity/{quantity} : Updates the inventory as per specified product type and quantity. Adds the new product type if not already present.
+5.  GET /inventory/restock/{productType} : Increases the stock count by one for the specified product.  Adds the new product type if not already present.
 
 ### Sample Request and Response Details
 
