@@ -46,7 +46,5 @@ Success - Http status 200 OK
     "productCategory": "mobile",
     "stock": 31
 }
-```
-```
-Failure - Http status 400 BAD REQUEST
+Product Category will be added, if not already present in the inventory.
 ```

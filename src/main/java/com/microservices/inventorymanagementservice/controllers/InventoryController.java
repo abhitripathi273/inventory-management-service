@@ -1,7 +1,6 @@
 package com.microservices.inventorymanagementservice.controllers;
 
 import com.microservices.inventorymanagementservice.models.Inventory;
-import com.microservices.inventorymanagementservice.repos.InventoryManagementRepository;
 import com.microservices.inventorymanagementservice.services.InventoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @RestController
 public class InventoryController {
@@ -35,8 +33,6 @@ public class InventoryController {
     public ResponseEntity<Inventory> restockProduct(@PathVariable String productType,
                                                     @PathVariable int quantity) {
         Inventory updatedInventory = service.restockProduct(productType, quantity);
-        if (null == updatedInventory.getProductCategory())
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(updatedInventory, HttpStatus.OK);
     }
 }
