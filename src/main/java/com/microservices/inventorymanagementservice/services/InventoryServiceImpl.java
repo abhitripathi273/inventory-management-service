@@ -37,11 +37,11 @@ public class InventoryServiceImpl implements InventoryService {
     @Override
     public Inventory restockProduct(String productType, int quantity) {
         Inventory updatedInventory = new Inventory();
+        updatedInventory.setProductCategory(productType);
+        updatedInventory.setStock(quantity);
         repository.findById(productType).ifPresent(inventory -> {
-            updatedInventory.setProductCategory(productType);
             updatedInventory.setStock(inventory.getStock() + quantity);
-            repository.save(updatedInventory);
         });
-        return updatedInventory;
+        return repository.save(updatedInventory);
     }
 }
