@@ -25,14 +25,13 @@ public class InventoryController {
     @GetMapping("/inventory/purchase/{productType}/quantity/{quantity}")
     public ResponseEntity<Void> purchaseProduct(@PathVariable String productType,
                                                 @PathVariable int quantity) {
-        System.out.println("Quantity: " + quantity);
         return service.purchaseProduct(productType, quantity) ?
                 new ResponseEntity<>(HttpStatus.OK) : new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @GetMapping("/inventory/purchase/{productType}")
     public ResponseEntity<Void> purchaseSingleProduct(@PathVariable String productType) {
-        return service.purchaseSingleProduct(productType) ?
+        return service.purchaseProduct(productType, 1) ?
                 new ResponseEntity<>(HttpStatus.OK) : new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
@@ -45,7 +44,7 @@ public class InventoryController {
 
     @GetMapping("/inventory/restock/{productType}")
     public ResponseEntity<Inventory> restockSingleProduct(@PathVariable String productType) {
-        Inventory updatedInventory = service.restockSingleProduct(productType);
+        Inventory updatedInventory = service.restockProduct(productType, 1);
         return new ResponseEntity<>(updatedInventory, HttpStatus.OK);
     }
 }
