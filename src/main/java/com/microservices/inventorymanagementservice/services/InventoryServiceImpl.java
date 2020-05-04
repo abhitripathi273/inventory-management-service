@@ -1,47 +1,46 @@
 package com.microservices.inventorymanagementservice.services;
 
+import com.microservices.inventorymanagementservice.exceptions.OutOfStockException;
 import com.microservices.inventorymanagementservice.models.Inventory;
-import com.microservices.inventorymanagementservice.repos.InventoryManagementRepository;
+import com.microservices.inventorymanagementservice.repos.InventoryReactiveRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
 
 @Service
 public class InventoryServiceImpl implements InventoryService {
 
     @Autowired
-    InventoryManagementRepository repository;
+    InventoryReactiveRepository repository;
 
     @Override
-    public List<Inventory> getInventoryDetails() {
+    public Flux<Inventory> getInventoryDetails() {
         return repository.findAll();
     }
 
     @Override
-    public boolean purchaseProduct(String productType, int quantity) {
-        AtomicBoolean success = new AtomicBoolean(false);
-        repository.findById(productType).ifPresent(inventory -> {
-            Inventory updatedInventory = new Inventory();
-            if (inventory.getStock() >= quantity) {
-                updatedInventory.setProductCategory(productType);
-                updatedInventory.setStock(inventory.getStock() - quantity);
-                repository.save(updatedInventory);
-                success.set(true);
-            }
-        });
-        return success.get();
+    public Mono<Inventory> purchaseProduct(String productType, int quantity) {
+        return repository.findById(productType)
+                .flatMap(current -> {
+                    if (quantity > current.getStock())
+                        return Mono.just(new Inventory());
+                    current.setStock(current.getStock() - quantity);
+                    return repository.save(current);
+                })
+                .defaultIfEmpty(new Inventory());
     }
 
     @Override
-    public Inventory restockProduct(String productType, int quantity) {
-        Inventory updatedInventory = new Inventory();
-        updatedInventory.setProductCategory(productType);
-        updatedInventory.setStock(quantity);
-        repository.findById(productType).ifPresent(inventory -> {
-            updatedInventory.setStock(inventory.getStock() + quantity);
-        });
-        return repository.save(updatedInventory);
+    public Mono<Inventory> restockProduct(String productType, int quantity) {
+        return repository.findById(productType)
+                .flatMap(current -> {
+                    current.setStock(current.getStock() + quantity);
+                    return repository.save(current);
+                })
+                .defaultIfEmpty(new Inventory(productType, quantity))
+                .flatMap(inventory -> repository.save(inventory));
     }
 }
