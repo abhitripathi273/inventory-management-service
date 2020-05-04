@@ -1,12 +1,11 @@
 package com.microservices.inventorymanagementservice.services;
 
 import com.microservices.inventorymanagementservice.models.Inventory;
-
-import java.util.List;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 public interface InventoryService {
-
-    List<Inventory> getInventoryDetails();
-    boolean purchaseProduct(String type, int quantity);
-    Inventory restockProduct(String type, int quantity);
+    Flux<Inventory> getInventoryDetails();
+    Mono<Inventory> purchaseProduct(String type, int quantity);
+    Mono<Inventory> restockProduct(String type, int quantity);
 }
